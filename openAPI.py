@@ -1,8 +1,7 @@
 import os
 import sys
 import urllib.request
-import xml.parsers.expat
-from urllib.parse import urlparse
+from xml.dom.minidom import *
 
 def start_element(name, attrs):
     print('Start element:', name, attrs)
@@ -18,7 +17,6 @@ rescode = response.getcode()
 if rescode == 200:
     resbody = response.read()
     #print(resbody.decode('utf-8'))
-    pa = xml.parsers.expat.ParserCreate()
-    pa.StartElementHandler = start_element
-    pa.CharacterDataHandler = char_data
-    pa.Parse(resbody)
+    #Dom 객체를 통한 파싱
+    doc = parseString(resbody)  # 문자열 입력 파싱 함수, DOC객체 반환
+    print(doc.toxml())
