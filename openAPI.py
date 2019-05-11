@@ -1,17 +1,12 @@
-import urllib.request as ul
-import xml.dom.minidom as doms
+import os
 import sys
-import io
+import urllib.request
+serviceKey = '1ZUPc%2BJmDiSiYavXUDMa1%2BbIXXZlyQjE1y%2FPZpJ88HsW28VvHpu7Sc4SS8DFMCrJlufba3pK3sf2JQtSvQ80Gg%3D%3D'
+url = 'http://openapi.tago.go.kr/openapi/service/BusSttnInfoInqireService/getCtyCodeList?serviceKey='
+request = urllib.request.Request(url + serviceKey)
+response = urllib.request.urlopen(request)
+rescode = response.getcode()
 
-sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
-sys.syderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
-
-url = 'http://know.kfri.go.kr/openapi/cyberLib/peridodicalIndexSearch.do?'
-key = 'keyValue=fZGmHhe%2BTsKPdIFP0icM0MT2qhJOXiIBCUOfpWsJdN8%3D'
-format = '&version=1.0&searchGbn=TITLE'
-
-req = ul.Request(url + key + format)
-
-response = ul.urlopen(req)
-rD = doms.parse(response)
-print(rD)
+if rescode == 200:
+    resbody = response.read()
+    print(resbody.decode('utf-8'))
