@@ -2,7 +2,7 @@ import os
 import sys
 import urllib.request
 from xml.dom.minidom import *
-
+#한 화면만 고집하지말고, 막대그래프도 넣고, 여러 그림 넣어도 되고, 5분 전에 소리나기 .
 cityCodeToStr = dict()
 cityStrToCode = dict()
 

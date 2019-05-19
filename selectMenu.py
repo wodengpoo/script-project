@@ -1,7 +1,7 @@
 from tkinter import *
 from searchBus import *
 from nearBusstop import *
-
+#무조건 기능 많이 때려넣는게 장땡! 이왕이면 신박한 기술
 class selectMenu:
     def exeBusstop(self):
         nearBusstop()

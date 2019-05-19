@@ -1,9 +1,18 @@
 from tkinter import *
 from tkinter import ttk
 from openAPI import *
+import folium
+
 
 class nearBusstop:
     def drawMap(self):
+        #folium.Map(location = [37.568477,126.981611].zoom_start=13)
+        #folium.Marker([37.568477,126.981611],popup = 'Mt.Hood Meadows').add_to(map_osm)
+        #map_osm.save('osm.html')
+
+        #folium.Marker([37.568477, 126.981611], popup='Mt. Hood Meadows').add_to(map_osm)
+        #map_osm.save('osm.html')
+
         map()
     def __init__(self):
         window = Tk()
@@ -53,12 +62,23 @@ class nearBusstop:
         window.mainloop()
 
 class map:
+
     def __init__(self):
         window = Tk()
         Label(window, text="지도").pack(anchor='w')
-        self.canvas = Canvas(window, width=200, height=200, bg='white')
+        self.canvas = Canvas(window, width=400, height=400, bg='white')
+        map_pos = [35.689551,139.700602]
+        map_osm = folium.Map(location=map_pos, zoom_start=17)
+        folium.CircleMarker(map_pos,radius= 100, color = '#3186cc',fill_color ='#3186cc').add_to(map_osm)
+
+        marker_pos1= [35.686626,139.699062]
+        folium.Marker(marker_pos1, popup= 'shinjuku Maynds Tower').add_to(map_osm)
+        map_osm.save('osm.html')
+        self.canvas = map_osm
+
         self.canvas.pack()
         window.mainloop()
+
 
 if __name__ == "__main__":
     nearBusstop()
