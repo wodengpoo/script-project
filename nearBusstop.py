@@ -1,7 +1,8 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 from openAPI import *
-import folium
+#import folium
 
 
 class nearBusstop:
@@ -14,6 +15,47 @@ class nearBusstop:
         #map_osm.save('osm.html')
 
         map()
+
+    def searchBusstop(self):
+        self.sttns = None
+        if self.posEntry.get() == '':
+            messagebox.showinfo("Search fail", "키워드를 적어야 합니다.")
+            return
+        if self.citycombobox.get() == '':
+            messagebox.showinfo("Search fail", "도시를 선택해야 합니다.")
+            return
+        elif self.citycombobox.get() == "서울특별시":
+            self.sttns, self.stid = Sgetsttn(urllib.parse.quote(self.posEntry.get()))
+        else:
+            self.sttns, self.stid = Kgetsttn(urllib.parse.quote(self.posEntry.get()))
+
+        if self.sttns != None:
+            if len(self.sttns) == 0:
+                messagebox.showinfo("Search fail", "검색 결과가 없습니다.")
+                return
+            self.busstoplist.delete(0, END)
+            for i in self.sttns:
+                self.busstoplist.insert(END, i)
+
+    def printpassbyBuslist(self, evt):
+        lb = evt.widget
+        self.busstopindex = lb.curselection()[0]
+        # print(self.sttns[self.busstopindex])
+        print(self.stid)
+        self.buses = None
+        if self.citycombobox.get() == "서울특별시":
+            self.buses = Sgetbusnm(urllib.parse.quote(self.stid[self.busstopindex]))
+        else:
+            self.buses = Kgetbusnm(urllib.parse.quote(self.stid[self.busstopindex]))
+
+        if self.buses != None:
+            if len(self.buses) == 0:
+                messagebox.showinfo("Search fail", "경유버스정보가 없습니다.")
+                return
+            self.passbylist.delete(0, END)
+            for i in self.buses:
+                self.passbylist.insert(END, i)
+
     def __init__(self):
         window = Tk()
 
@@ -29,10 +71,10 @@ class nearBusstop:
         Label(self.frame1, text="도시선택", width=10).pack(side=LEFT)
 
         self.citycombobox = ttk.Combobox(self.frame1, width=10, height=10, textvariable=str)
-        self.citycombobox["values"] = tuple(cityStrToCode.keys())
+        self.citycombobox["values"] = tuple(("서울특별시", "경기도"))
         self.citycombobox.pack(side=LEFT, padx=10)
 
-        Label(self.frame1, text="위치값", width=10).pack(side=LEFT)
+        Label(self.frame1, text="키워드", width=10).pack(side=LEFT)
 
         self.posEntry = Entry(self.frame1, width=10)
         self.posEntry.pack(side=LEFT, padx=10)
