@@ -79,7 +79,7 @@ class nearBusstop:
         self.posEntry = Entry(self.frame1, width=10)
         self.posEntry.pack(side=LEFT, padx=10)
 
-        Button(self.frame1, text="검색", width=5).pack(side=LEFT)
+        Button(self.frame1, text="검색", width=5, command=self.searchBusstop).pack(side=LEFT)
 
         Label(self.frame2, text="주변정류소", width=10).pack()
 
@@ -88,6 +88,7 @@ class nearBusstop:
         self.scrollbar1 = Scrollbar(self.busstopframe)
         self.scrollbar1.pack(side="right", fill="y")
         self.busstoplist = Listbox(self.busstopframe, yscrollcommand=self.scrollbar1.set)
+        self.busstoplist.bind("<<ListboxSelect>>", self.printpassbyBuslist)
         self.busstoplist.pack()
 
         Label(self.frame3, text="경유 버스 목록", width=10).pack()
