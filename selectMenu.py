@@ -10,7 +10,7 @@ class selectMenu:
     def __init__(self):
         window = Tk()
 
-        getData() #도시 코드 정보를 가져옴
+        #getData() #도시 코드 정보를 가져옴
         image = PhotoImage(file='image/kpu.gif')
         Label(window, text='a', image=image).pack()
         self.nB = Button(window, text="주변 정류소 검색", command=self.exeBusstop)

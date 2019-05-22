@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from openAPI import *
+from searchBus import *
 #import folium
 
 
@@ -39,9 +40,10 @@ class nearBusstop:
 
     def printpassbyBuslist(self, evt):
         lb = evt.widget
+        if len(lb.curselection()) == 0 : return
         self.busstopindex = lb.curselection()[0]
         # print(self.sttns[self.busstopindex])
-        print(self.stid)
+        #print(self.stid)
         self.buses = None
         if self.citycombobox.get() == "서울특별시":
             self.buses = Sgetbusnm(urllib.parse.quote(self.stid[self.busstopindex]))
@@ -55,9 +57,15 @@ class nearBusstop:
             self.passbylist.delete(0, END)
             for i in self.buses:
                 self.passbylist.insert(END, i)
+    def searchBus(self):
+        searchBus(self.retBusNM())
+    def retBusNM(self):
+        if len(self.passbylist.curselection()) == 0 : return None
+        return self.buses[self.passbylist.curselection()[0]]
 
     def __init__(self):
         window = Tk()
+        window.geometry("+200+300")
 
         self.frame1 = Frame(window)
         self.frame1.pack()
@@ -100,6 +108,7 @@ class nearBusstop:
         self.passbylist = Listbox(self.passbyframe, yscrollcommand=self.scrollbar2.set)
         self.passbylist.pack()
 
+        Button(self.frame3, text="버스 검색", command=self.searchBus).pack(side=LEFT)
         Button(self.frame3, text="지도 보기", command=self.drawMap).pack()
 
         window.mainloop()
