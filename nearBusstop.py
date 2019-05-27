@@ -29,7 +29,6 @@ class nearBusstop:
             self.sttns, self.stid = Sgetsttn(urllib.parse.quote(self.posEntry.get()))
         else:
             self.sttns, self.stid = Kgetsttn(urllib.parse.quote(self.posEntry.get()))
-
         if self.sttns != None:
             if len(self.sttns) == 0:
                 messagebox.showinfo("Search fail", "검색 결과가 없습니다.")
@@ -45,10 +44,13 @@ class nearBusstop:
         # print(self.sttns[self.busstopindex])
         #print(self.stid)
         self.buses = None
+        self.bsid = None
+        self.curstid = self.retStid()
+        print(self.stid[self.busstopindex])
         if self.citycombobox.get() == "서울특별시":
-            self.buses = Sgetbusnm(urllib.parse.quote(self.stid[self.busstopindex]))
+            self.buses, self.bsid = Sgetbusnm(urllib.parse.quote(self.stid[self.busstopindex]))
         else:
-            self.buses = Kgetbusnm(urllib.parse.quote(self.stid[self.busstopindex]))
+            self.buses, self.bsid = Kgetbusnm(urllib.parse.quote(self.stid[self.busstopindex]))
 
         if self.buses != None:
             if len(self.buses) == 0:
@@ -58,7 +60,17 @@ class nearBusstop:
             for i in self.buses:
                 self.passbylist.insert(END, i)
     def searchBus(self):
-        searchBus(self.retBusNM())
+        print(self.curstid, self.retBusid(), self.retBusNM())
+        if self.citycombobox.get() == "서울특별시":
+            searchBus(self.curstid, self.retBusid(), self.retBusNM(), 's')
+        else:
+            searchBus(self.curstid, self.retBusid(), self.retBusNM(), 'k')
+    def retStid(self):
+        if len(self.busstoplist.curselection()) == 0: return None
+        return self.stid[self.busstoplist.curselection()[0]]
+    def retBusid(self):
+        if len(self.passbylist.curselection()) == 0: return None
+        return self.bsid[self.passbylist.curselection()[0]]
     def retBusNM(self):
         if len(self.passbylist.curselection()) == 0 : return None
         return self.buses[self.passbylist.curselection()[0]]
