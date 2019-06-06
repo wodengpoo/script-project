@@ -288,7 +288,7 @@ def KgetbusInfo(stid, busid, busnm):
                 break
 
     serviceKey = '1ZUPc%2BJmDiSiYavXUDMa1%2BbIXXZlyQjE1y%2FPZpJ88HsW28VvHpu7Sc4SS8DFMCrJlufba3pK3sf2JQtSvQ80Gg%3D%3D'
-    url = 'http://openapi.gbis.go.kr/ws/rest/busarrivalservice/station?serviceKey='
+    url = 'http://openapi.gbis.go.kr/ws/rest/busarrivalseㄹvice/station?serviceKey='
 
     request = urllib.request.Request(url + serviceKey + '&stationId=' + stid)
     response = urllib.request.urlopen(request)
