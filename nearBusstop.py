@@ -3,13 +3,17 @@ from tkinter import ttk
 from tkinter import messagebox
 from openAPI import *
 from searchBus import *
-import folium
-from urllib.request import urlopen
-from bs4 import BeautifulSoup
-import os
+
 
 class nearBusstop:
     def drawMap(self):
+        #folium.Map(location = [37.568477,126.981611].zoom_start=13)
+        #folium.Marker([37.568477,126.981611],popup = 'Mt.Hood Meadows').add_to(map_osm)
+        #map_osm.save('osm.html')
+
+        #folium.Marker([37.568477, 126.981611], popup='Mt. Hood Meadows').add_to(map_osm)
+        #map_osm.save('osm.html')
+
         map()
 
     def searchBusstop(self):
@@ -44,8 +48,14 @@ class nearBusstop:
         print(self.stid[self.busstopindex])
         if self.citycombobox.get() == "서울특별시":
             self.buses, self.bsid = Sgetbusnm(urllib.parse.quote(self.stid[self.busstopindex]))
+            self.Infolist = SgetbusInfo(self.curstid, self.bsid, self.buses)
+            print(self.Infolist)
+            print(self.bsid)
         else:
             self.buses, self.bsid = Kgetbusnm(urllib.parse.quote(self.stid[self.busstopindex]))
+            self.Infolist = KgetbusInfo(self.curstid, self.bsid, self.buses)
+            print(self.Infolist)
+            print(self.bsid)
 
         if self.buses != None:
             if len(self.buses) == 0:
@@ -54,35 +64,88 @@ class nearBusstop:
             self.passbylist.delete(0, END)
             for i in self.buses:
                 self.passbylist.insert(END, i)
-    def searchBus(self):
-        print(self.curstid, self.retBusid(), self.retBusNM())
-        if self.citycombobox.get() == "서울특별시":
-            searchBus(self.curstid, self.retBusid(), self.retBusNM(), 's')
+            self.drawGraph()
+    def drawGraph(self):
+        self.frame4.pack_forget()
+        self.frame4 = Frame(self.window)
+        self.frame4.pack(side=LEFT, padx=20)
+        Label(self.frame4, text='버스번호별 남은시간 그래프').pack()
+        Label(self.frame4, text='0으로 출력되는 경우, API에서 제공하지 않는 정보이거나, 운행이 종료된 버스입니다.').pack()
+
+        self.width , self.height = 50 * len(self.buses), 200
+        self.canvas = Canvas(self.frame4, width=self.width, height=self.height)
+        self.canvas.pack()
+        self.canvas.delete("histogram")
+        histograms = []
+        if self.passbylist.size() == 0 : return
+        self.canvas.create_line(10, self.height - 10, self.width - 10, self.height - 10)
+        for i in self.Infolist:
+            if self.citycombobox.get() == "서울특별시":
+                L = list(filter(str.isdigit, i[1]))
+                histograms.append(L)
+                if len(L) != 0:
+                    L.pop()
+                print(histograms)
+            else:
+                pass
+        cnt = 0
+        for i in histograms:
+            if len(i) == 2:
+                i.insert(1, '0')
+            if len(i) == 1:
+                i.append('00')
+            if len(i) > 4:
+                while(len(i) > 4):
+                    i.pop()
+            s = ''
+            for j in i:
+                s += j
+            if s == '':
+                s = 0
+            histograms[cnt] = int(s)
+            cnt += 1
+        print(histograms)
+        if len(histograms) == 1:
+            barW = 30
         else:
-            searchBus(self.curstid, self.retBusid(), self.retBusNM(), 'k')
+            barW = (self.width - 50) / (len(histograms) + 1)
+        maxCount = int(max(histograms))
+        if maxCount == 0 or len(histograms) == 0:
+            messagebox.showinfo("ShowInfo", "제공 데이터가 존재하지 않습니다.")
+            return
+        vacant = 10
+        print(vacant)
+        for i in range(len(histograms)):
+            self.canvas.create_rectangle(10 + barW * i + vacant * i, min(self.height - 10, self.height - (self.height - 15) * histograms[i] / maxCount),
+                                         10 + barW * (i + 1) + vacant * i, self.height - 10, tags="histogram")
+            self.canvas.create_text(10 + (i+1) * barW - barW/2 + vacant * i, self.height - 5, text=self.buses[i], tags="histogram")
+            self.canvas.create_text(10 + (i+1) * barW - barW/2 + vacant * i, min(self.height-20, self.height - (self.height - 15) * histograms[i] / maxCount - 5),
+                                    text=str(histograms[i])
+                                    , tags="histogram")
+    def searchBus(self):
+        if self.citycombobox.get() == "서울특별시":
+            searchBus(self.Infolist[self.passbylist.curselection()[0]], self.buses[self.passbylist.curselection()[0]], '서울특별시')
+        else:
+            searchBus(self.Infolist[self.passbylist.curselection()[0]], self.buses[self.passbylist.curselection()[0]], '경기도')
     def retStid(self):
         if len(self.busstoplist.curselection()) == 0: return None
         return self.stid[self.busstoplist.curselection()[0]]
-    def retBusid(self):
-        if len(self.passbylist.curselection()) == 0: return None
-        return self.bsid[self.passbylist.curselection()[0]]
-    def retBusNM(self):
-        if len(self.passbylist.curselection()) == 0 : return None
-        return self.buses[self.passbylist.curselection()[0]]
 
     def __init__(self):
-        window = Tk()
+        self.window = Tk()
+        self.window.geometry("+200+300")
 
-        window.geometry("+200+300")
-
-        self.frame1 = Frame(window)
+        self.frame1 = Frame(self.window)
         self.frame1.pack()
 
-        self.frame2 = Frame(window)
+        self.frame2 = Frame(self.window)
         self.frame2.pack(side=LEFT, padx=20)
 
-        self.frame3 = Frame(window)
+        self.frame3 = Frame(self.window)
         self.frame3.pack(side=LEFT, padx=20)
+
+        self.frame4 = Frame(self.window)
+        self.frame4.pack(side=LEFT, padx=20)
 
         Label(self.frame1, text="도시선택", width=10).pack(side=LEFT)
 
@@ -119,15 +182,15 @@ class nearBusstop:
         Button(self.frame3, text="버스 검색", command=self.searchBus).pack(side=LEFT)
         Button(self.frame3, text="지도 보기", command=self.drawMap).pack()
 
-        window.mainloop()
-
-
+        self.window.mainloop()
 
 class map:
 
     def __init__(self):
-        #window = Tk()
-        #Label(window, text="지도").pack(anchor='w')
+        window = Toplevel()
+        """Label(window, text="지도").pack(anchor='w')
+
+        import folium
 
         map_pos = [35.689551,139.700602]
         map_osm = folium.Map(location=map_pos, zoom_start=17)
@@ -136,14 +199,27 @@ class map:
         marker_pos1= [35.686626,139.699062]
         folium.Marker(marker_pos1, popup= 'shinjuku Maynds Tower').add_to(map_osm)
         map_osm.save('osm.html')
-        self.canvas = map_osm
-        os.system("osm.html")
-        # bsObject = BeautifulSoup(html, "html.parser")
+        #여기까지가 map html파일 만들기"""
+        import requests
+
+        api_key = 'AIzaSyCtpYG4bU7y4irUBh_YjNCQBVaZFWETWs0'
+        url = 'http://maps.googleapis.com/maps/api/staticmap?'
+        center = '40.714728,-73.998672'
+        zoom = '12'
+
+        r = requests.get(url + "center=" + center + "&zoom=" +
+                         zoom + "&size=400x400&key=" + api_key)
+        f = open('m.png', 'wb')
+
+        print(r.content)
+        f.write(r.content)
+
+        f.close()
 
 
-        #self.canvas.pack()
-        #window.mainloop()
+        window.mainloop()
 
 
 if __name__ == "__main__":
-    nearBusstop()
+    #nearBusstop()
+    map()
