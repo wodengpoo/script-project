@@ -3,18 +3,13 @@ from tkinter import ttk
 from tkinter import messagebox
 from openAPI import *
 from searchBus import *
-#import folium
-
+import folium
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+import os
 
 class nearBusstop:
     def drawMap(self):
-        #folium.Map(location = [37.568477,126.981611].zoom_start=13)
-        #folium.Marker([37.568477,126.981611],popup = 'Mt.Hood Meadows').add_to(map_osm)
-        #map_osm.save('osm.html')
-
-        #folium.Marker([37.568477, 126.981611], popup='Mt. Hood Meadows').add_to(map_osm)
-        #map_osm.save('osm.html')
-
         map()
 
     def searchBusstop(self):
@@ -77,6 +72,7 @@ class nearBusstop:
 
     def __init__(self):
         window = Tk()
+
         window.geometry("+200+300")
 
         self.frame1 = Frame(window)
@@ -125,12 +121,14 @@ class nearBusstop:
 
         window.mainloop()
 
+
+
 class map:
 
     def __init__(self):
-        window = Tk()
-        Label(window, text="지도").pack(anchor='w')
-        self.canvas = Canvas(window, width=400, height=400, bg='white')
+        #window = Tk()
+        #Label(window, text="지도").pack(anchor='w')
+
         map_pos = [35.689551,139.700602]
         map_osm = folium.Map(location=map_pos, zoom_start=17)
         folium.CircleMarker(map_pos,radius= 100, color = '#3186cc',fill_color ='#3186cc').add_to(map_osm)
@@ -139,9 +137,12 @@ class map:
         folium.Marker(marker_pos1, popup= 'shinjuku Maynds Tower').add_to(map_osm)
         map_osm.save('osm.html')
         self.canvas = map_osm
+        os.system("osm.html")
+        # bsObject = BeautifulSoup(html, "html.parser")
 
-        self.canvas.pack()
-        window.mainloop()
+
+        #self.canvas.pack()
+        #window.mainloop()
 
 
 if __name__ == "__main__":
