@@ -186,40 +186,33 @@ class nearBusstop:
 
 class map:
 
-    def __init__(self):
+    def __init__(self, x='40.714728', y='-73.998672'):
         window = Toplevel()
-        """Label(window, text="지도").pack(anchor='w')
+        Label(window, text="지도").pack(anchor='w')
 
-        import folium
-
-        map_pos = [35.689551,139.700602]
-        map_osm = folium.Map(location=map_pos, zoom_start=17)
-        folium.CircleMarker(map_pos,radius= 100, color = '#3186cc',fill_color ='#3186cc').add_to(map_osm)
-
-        marker_pos1= [35.686626,139.699062]
-        folium.Marker(marker_pos1, popup= 'shinjuku Maynds Tower').add_to(map_osm)
-        map_osm.save('osm.html')
-        #여기까지가 map html파일 만들기"""
         import requests
 
         api_key = 'AIzaSyCtpYG4bU7y4irUBh_YjNCQBVaZFWETWs0'
         url = 'http://maps.googleapis.com/maps/api/staticmap?'
-        center = '40.714728,-73.998672'
+        center = str(x) + ',' + str(y)
         zoom = '12'
 
         r = requests.get(url + "center=" + center + "&zoom=" +
                          zoom + "&size=400x400&key=" + api_key)
-        f = open('m.png', 'wb')
+        f = open('m.gif', 'wb')
 
         print(r.content)
         f.write(r.content)
 
         f.close()
 
+        imgsrc = PhotoImage(file="m.gif")
+        Label(window, image=imgsrc).pack()
+
 
         window.mainloop()
 
 
 if __name__ == "__main__":
-    #nearBusstop()
-    map()
+    nearBusstop()
+    #map()
