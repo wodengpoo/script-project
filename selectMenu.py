@@ -10,7 +10,7 @@ class selectMenu:
         searchBus()
 
     def telegrambot(self):
-        pass
+        handle()
 
     def __init__(self):
         window = Tk()

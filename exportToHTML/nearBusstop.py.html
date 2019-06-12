@@ -1,0 +1,171 @@
+<html>
+<head>
+<title>nearBusstop.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6a8759;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+nearBusstop.py</font>
+</center></td></tr></table>
+<pre><span class="s0">from </span><span class="s1">tkinter </span><span class="s0">import </span><span class="s1">*</span>
+<span class="s0">from </span><span class="s1">tkinter </span><span class="s0">import </span><span class="s1">ttk</span>
+<span class="s0">from </span><span class="s1">tkinter </span><span class="s0">import </span><span class="s1">messagebox</span>
+<span class="s0">from </span><span class="s1">openAPI </span><span class="s0">import </span><span class="s1">*</span>
+<span class="s0">from </span><span class="s1">searchBus </span><span class="s0">import </span><span class="s1">*</span>
+<span class="s0">import </span><span class="s1">folium</span>
+
+
+<span class="s0">class </span><span class="s1">nearBusstop:</span>
+    <span class="s0">def </span><span class="s1">drawMap(self):</span>
+        <span class="s2">#folium.Map(location = [37.568477,126.981611].zoom_start=13)</span>
+        #folium.Marker([37.568477,126.981611],popup = 'Mt.Hood Meadows').add_to(map_osm)
+        #map_osm.save('osm.html')
+
+        #folium.Marker([37.568477, 126.981611], popup='Mt. Hood Meadows').add_to(map_osm)
+        #map_osm.save('osm.html')
+
+        <span class="s1">map()</span>
+
+    <span class="s0">def </span><span class="s1">searchBusstop(self):</span>
+        self.sttns = <span class="s0">None</span>
+        if <span class="s1">self.posEntry.get() == </span><span class="s3">''</span><span class="s1">:</span>
+            messagebox.showinfo(<span class="s3">&quot;Search fail&quot;</span><span class="s0">, </span><span class="s3">&quot;키워드를 적어야 합니다.&quot;</span><span class="s1">)</span>
+            <span class="s0">return</span>
+        if <span class="s1">self.citycombobox.get() == </span><span class="s3">''</span><span class="s1">:</span>
+            messagebox.showinfo(<span class="s3">&quot;Search fail&quot;</span><span class="s0">, </span><span class="s3">&quot;도시를 선택해야 합니다.&quot;</span><span class="s1">)</span>
+            <span class="s0">return</span>
+        elif <span class="s1">self.citycombobox.get() == </span><span class="s3">&quot;서울특별시&quot;</span><span class="s1">:</span>
+            self.sttns<span class="s0">, </span><span class="s1">self.stid = Sgetsttn(urllib.parse.quote(self.posEntry.get()))</span>
+        <span class="s0">else</span><span class="s1">:</span>
+            self.sttns<span class="s0">, </span><span class="s1">self.stid = Kgetsttn(urllib.parse.quote(self.posEntry.get()))</span>
+        <span class="s0">if </span><span class="s1">self.sttns != </span><span class="s0">None</span><span class="s1">:</span>
+            <span class="s0">if </span><span class="s1">len(self.sttns) == </span><span class="s4">0</span><span class="s1">:</span>
+                messagebox.showinfo(<span class="s3">&quot;Search fail&quot;</span><span class="s0">, </span><span class="s3">&quot;검색 결과가 없습니다.&quot;</span><span class="s1">)</span>
+                <span class="s0">return</span>
+            <span class="s1">self.busstoplist.delete(</span><span class="s4">0</span><span class="s0">, </span><span class="s1">END)</span>
+            <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">self.sttns:</span>
+                self.busstoplist.insert(END<span class="s0">, </span><span class="s1">i)</span>
+
+    <span class="s0">def </span><span class="s1">printpassbyBuslist(self</span><span class="s0">, </span><span class="s1">evt):</span>
+        lb = evt.widget
+        <span class="s0">if </span><span class="s1">len(lb.curselection()) == </span><span class="s4">0 </span><span class="s1">: </span><span class="s0">return</span>
+        <span class="s1">self.busstopindex = lb.curselection()[</span><span class="s4">0</span><span class="s1">]</span>
+        <span class="s2"># print(self.sttns[self.busstopindex])</span>
+        #print(self.stid)
+        <span class="s1">self.buses = </span><span class="s0">None</span>
+        <span class="s1">self.bsid = </span><span class="s0">None</span>
+        <span class="s1">self.curstid = self.retStid()</span>
+        print(self.stid[self.busstopindex])
+        <span class="s0">if </span><span class="s1">self.citycombobox.get() == </span><span class="s3">&quot;서울특별시&quot;</span><span class="s1">:</span>
+            self.buses<span class="s0">, </span><span class="s1">self.bsid = Sgetbusnm(urllib.parse.quote(self.stid[self.busstopindex]))</span>
+        <span class="s0">else</span><span class="s1">:</span>
+            self.buses<span class="s0">, </span><span class="s1">self.bsid = Kgetbusnm(urllib.parse.quote(self.stid[self.busstopindex]))</span>
+
+        <span class="s0">if </span><span class="s1">self.buses != </span><span class="s0">None</span><span class="s1">:</span>
+            <span class="s0">if </span><span class="s1">len(self.buses) == </span><span class="s4">0</span><span class="s1">:</span>
+                messagebox.showinfo(<span class="s3">&quot;Search fail&quot;</span><span class="s0">, </span><span class="s3">&quot;경유버스정보가 없습니다.&quot;</span><span class="s1">)</span>
+                <span class="s0">return</span>
+            <span class="s1">self.passbylist.delete(</span><span class="s4">0</span><span class="s0">, </span><span class="s1">END)</span>
+            <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">self.buses:</span>
+                self.passbylist.insert(END<span class="s0">, </span><span class="s1">i)</span>
+    <span class="s0">def </span><span class="s1">searchBus(self):</span>
+        print(self.curstid<span class="s0">, </span><span class="s1">self.retBusid()</span><span class="s0">, </span><span class="s1">self.retBusNM())</span>
+        <span class="s0">if </span><span class="s1">self.citycombobox.get() == </span><span class="s3">&quot;서울특별시&quot;</span><span class="s1">:</span>
+            searchBus(self.curstid<span class="s0">, </span><span class="s1">self.retBusid()</span><span class="s0">, </span><span class="s1">self.retBusNM()</span><span class="s0">, </span><span class="s3">'s'</span><span class="s1">)</span>
+        <span class="s0">else</span><span class="s1">:</span>
+            searchBus(self.curstid<span class="s0">, </span><span class="s1">self.retBusid()</span><span class="s0">, </span><span class="s1">self.retBusNM()</span><span class="s0">, </span><span class="s3">'k'</span><span class="s1">)</span>
+    <span class="s0">def </span><span class="s1">retStid(self):</span>
+        <span class="s0">if </span><span class="s1">len(self.busstoplist.curselection()) == </span><span class="s4">0</span><span class="s1">: </span><span class="s0">return None</span>
+        return <span class="s1">self.stid[self.busstoplist.curselection()[</span><span class="s4">0</span><span class="s1">]]</span>
+    <span class="s0">def </span><span class="s1">retBusid(self):</span>
+        <span class="s0">if </span><span class="s1">len(self.passbylist.curselection()) == </span><span class="s4">0</span><span class="s1">: </span><span class="s0">return None</span>
+        return <span class="s1">self.bsid[self.passbylist.curselection()[</span><span class="s4">0</span><span class="s1">]]</span>
+    <span class="s0">def </span><span class="s1">retBusNM(self):</span>
+        <span class="s0">if </span><span class="s1">len(self.passbylist.curselection()) == </span><span class="s4">0 </span><span class="s1">: </span><span class="s0">return None</span>
+        return <span class="s1">self.buses[self.passbylist.curselection()[</span><span class="s4">0</span><span class="s1">]]</span>
+
+    <span class="s0">def </span><span class="s1">__init__(self):</span>
+        window = Tk()
+
+        window.geometry(<span class="s3">&quot;+200+300&quot;</span><span class="s1">)</span>
+
+        self.frame1 = Frame(window)
+        self.frame1.pack()
+
+        self.frame2 = Frame(window)
+        self.frame2.pack(side=LEFT<span class="s0">, </span><span class="s1">padx=</span><span class="s4">20</span><span class="s1">)</span>
+
+        self.frame3 = Frame(window)
+        self.frame3.pack(side=LEFT<span class="s0">, </span><span class="s1">padx=</span><span class="s4">20</span><span class="s1">)</span>
+
+        Label(self.frame1<span class="s0">, </span><span class="s1">text=</span><span class="s3">&quot;도시선택&quot;</span><span class="s0">, </span><span class="s1">width=</span><span class="s4">10</span><span class="s1">).pack(side=LEFT)</span>
+
+        self.citycombobox = ttk.Combobox(self.frame1<span class="s0">, </span><span class="s1">width=</span><span class="s4">10</span><span class="s0">, </span><span class="s1">height=</span><span class="s4">10</span><span class="s0">, </span><span class="s1">textvariable=str)</span>
+        self.citycombobox[<span class="s3">&quot;values&quot;</span><span class="s1">] = tuple((</span><span class="s3">&quot;서울특별시&quot;</span><span class="s0">, </span><span class="s3">&quot;경기도&quot;</span><span class="s1">))</span>
+        self.citycombobox.pack(side=LEFT<span class="s0">, </span><span class="s1">padx=</span><span class="s4">10</span><span class="s1">)</span>
+
+        Label(self.frame1<span class="s0">, </span><span class="s1">text=</span><span class="s3">&quot;키워드&quot;</span><span class="s0">, </span><span class="s1">width=</span><span class="s4">10</span><span class="s1">).pack(side=LEFT)</span>
+
+        self.posEntry = Entry(self.frame1<span class="s0">, </span><span class="s1">width=</span><span class="s4">10</span><span class="s1">)</span>
+        self.posEntry.pack(side=LEFT<span class="s0">, </span><span class="s1">padx=</span><span class="s4">10</span><span class="s1">)</span>
+
+        Button(self.frame1<span class="s0">, </span><span class="s1">text=</span><span class="s3">&quot;검색&quot;</span><span class="s0">, </span><span class="s1">width=</span><span class="s4">5</span><span class="s0">, </span><span class="s1">command=self.searchBusstop).pack(side=LEFT)</span>
+
+        Label(self.frame2<span class="s0">, </span><span class="s1">text=</span><span class="s3">&quot;주변정류소&quot;</span><span class="s0">, </span><span class="s1">width=</span><span class="s4">10</span><span class="s1">).pack()</span>
+
+        self.busstopframe = Frame(self.frame2)
+        self.busstopframe.pack()
+        self.scrollbar1 = Scrollbar(self.busstopframe)
+        self.scrollbar1.pack(side=<span class="s3">&quot;right&quot;</span><span class="s0">, </span><span class="s1">fill=</span><span class="s3">&quot;y&quot;</span><span class="s1">)</span>
+        self.busstoplist = Listbox(self.busstopframe<span class="s0">, </span><span class="s1">yscrollcommand=self.scrollbar1.set)</span>
+        self.busstoplist.bind(<span class="s3">&quot;&lt;&lt;ListboxSelect&gt;&gt;&quot;</span><span class="s0">, </span><span class="s1">self.printpassbyBuslist)</span>
+        self.busstoplist.pack()
+
+        Label(self.frame3<span class="s0">, </span><span class="s1">text=</span><span class="s3">&quot;경유 버스 목록&quot;</span><span class="s0">, </span><span class="s1">width=</span><span class="s4">10</span><span class="s1">).pack()</span>
+
+        self.passbyframe = Frame(self.frame3)
+        self.passbyframe.pack()
+        self.scrollbar2 = Scrollbar(self.passbyframe)
+        self.scrollbar2.pack(side=<span class="s3">&quot;right&quot;</span><span class="s0">, </span><span class="s1">fill=</span><span class="s3">&quot;y&quot;</span><span class="s1">)</span>
+        self.passbylist = Listbox(self.passbyframe<span class="s0">, </span><span class="s1">yscrollcommand=self.scrollbar2.set)</span>
+        self.passbylist.pack()
+
+        Button(self.frame3<span class="s0">, </span><span class="s1">text=</span><span class="s3">&quot;버스 검색&quot;</span><span class="s0">, </span><span class="s1">command=self.searchBus).pack(side=LEFT)</span>
+        Button(self.frame3<span class="s0">, </span><span class="s1">text=</span><span class="s3">&quot;지도 보기&quot;</span><span class="s0">, </span><span class="s1">command=self.drawMap).pack()</span>
+
+        window.mainloop()
+
+<span class="s2">#이미지 지도 그래프 텔레그램봇 연동 얏지 게임</span>
+
+<span class="s0">class </span><span class="s1">map:</span>
+
+    <span class="s0">def </span><span class="s1">__init__(self):</span>
+        window = Tk()
+        Label(window<span class="s0">, </span><span class="s1">text=</span><span class="s3">&quot;지도&quot;</span><span class="s1">).pack(anchor=</span><span class="s3">'w'</span><span class="s1">)</span>
+        self.canvas = Canvas(window<span class="s0">, </span><span class="s1">width=</span><span class="s4">400</span><span class="s0">, </span><span class="s1">height=</span><span class="s4">400</span><span class="s0">, </span><span class="s1">bg=</span><span class="s3">'white'</span><span class="s1">)</span>
+        map_pos = [<span class="s4">35.689551</span><span class="s0">,</span><span class="s4">139.700602</span><span class="s1">]</span>
+        map_osm = folium.Map(location=map_pos<span class="s0">, </span><span class="s1">zoom_start=</span><span class="s4">17</span><span class="s1">)</span>
+        folium.CircleMarker(map_pos<span class="s0">,</span><span class="s1">radius= </span><span class="s4">100</span><span class="s0">, </span><span class="s1">color = </span><span class="s3">'#3186cc'</span><span class="s0">,</span><span class="s1">fill_color =</span><span class="s3">'#3186cc'</span><span class="s1">).add_to(map_osm)</span>
+
+        marker_pos1= [<span class="s4">35.686626</span><span class="s0">,</span><span class="s4">139.699062</span><span class="s1">]</span>
+        folium.Marker(marker_pos1<span class="s0">, </span><span class="s1">popup= </span><span class="s3">'shinjuku Maynds Tower'</span><span class="s1">).add_to(map_osm)</span>
+        map_osm.save(<span class="s3">'osm.html'</span><span class="s1">)</span>
+        self.canvas = map_osm
+
+        self.canvas.pack()
+        window.mainloop()
+
+
+<span class="s0">if </span><span class="s1">__name__ == </span><span class="s3">&quot;__main__&quot;</span><span class="s1">:</span>
+    nearBusstop()</pre>
+</body>
+</html>
