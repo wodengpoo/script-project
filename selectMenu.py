@@ -1,16 +1,15 @@
 from tkinter import *
-from searchBus import *
+import searchBus
 from nearBusstop import *
-from teller import *
+#from teller import *
 #무조건 기능 많이 때려넣는게 장땡! 이왕이면 신박한 기술
 class selectMenu:
     def exeBusstop(self):
         nearBusstop()
-    def exeSearchBus(self):
-        searchBus()
 
     def telegrambot(self):
-        handle()
+        #handle()
+        pass
 
     def __init__(self):
         window = Tk()
@@ -20,8 +19,6 @@ class selectMenu:
         Label(window, text='a',bg='white', image=image).pack()
         self.nB = Button(window, text="주변 정류소 검색", command=self.exeBusstop)
         self.nB.pack()
-        self.sB = Button(window, text="버스 검색", bg='white',command=self.exeSearchBus)
-        self.sB.pack()
         #민희쓰의 텔레그램봇
         self.TB = Button(window, text ="텔레그램봇과 연결",command = self.telegrambot)
         self.TB.pack()

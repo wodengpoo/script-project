@@ -40,7 +40,7 @@ class searchBus:
         Label(self.frame3, image=imgsrc).pack()
 
         Label(self.frame3, text="받을 메일 : ").pack(side=LEFT)
-        self.mailentry = Entry(self.frame3, width=8)
+        self.mailentry = Entry(self.frame3, width=20)
         self.mailentry.pack(side=LEFT)
         self.mailbutton = Button(self.frame3, text="정보 메일로 전송", command=self.sendEmail)
         self.mailbutton.pack()

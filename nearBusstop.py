@@ -2,19 +2,14 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from openAPI import *
-from searchBus import *
+import searchBus
+import spam
 
 
 class nearBusstop:
     def drawMap(self):
-        #folium.Map(location = [37.568477,126.981611].zoom_start=13)
-        #folium.Marker([37.568477,126.981611],popup = 'Mt.Hood Meadows').add_to(map_osm)
-        #map_osm.save('osm.html')
-
-        #folium.Marker([37.568477, 126.981611], popup='Mt. Hood Meadows').add_to(map_osm)
-        #map_osm.save('osm.html')
-
-        map()
+        #print("선택된 버스 정류장 위치? " + str(self.stposx[self.busstopindex]) + ' ' + self.stposy[self.busstopindex])
+        map(self.stposy[self.busstopindex], self.stposx[self.busstopindex])
 
     def searchBusstop(self):
         self.sttns = None
@@ -25,9 +20,9 @@ class nearBusstop:
             messagebox.showinfo("Search fail", "도시를 선택해야 합니다.")
             return
         elif self.citycombobox.get() == "서울특별시":
-            self.sttns, self.stid = Sgetsttn(urllib.parse.quote(self.posEntry.get()))
+            self.sttns, self.stid, self.stposx, self.stposy = Sgetsttn(urllib.parse.quote(self.posEntry.get()))
         else:
-            self.sttns, self.stid = Kgetsttn(urllib.parse.quote(self.posEntry.get()))
+            self.sttns, self.stid, self.stposx, self.stposy = Kgetsttn(urllib.parse.quote(self.posEntry.get()))
         if self.sttns != None:
             if len(self.sttns) == 0:
                 messagebox.showinfo("Search fail", "검색 결과가 없습니다.")
@@ -102,9 +97,10 @@ class nearBusstop:
                 s += j
             if s == '':
                 s = 0
-            histograms[cnt] = int(s)
+            #histograms[cnt] = int(s)
+            histograms[cnt] = spam.timesize(int(s[0]), int(s[-2] + s[-1]))
             cnt += 1
-        print(histograms)
+        #print(histograms)
         if len(histograms) == 1:
             barW = 30
         else:
@@ -114,7 +110,7 @@ class nearBusstop:
             messagebox.showinfo("ShowInfo", "제공 데이터가 존재하지 않습니다.")
             return
         vacant = 10
-        print(vacant)
+        #print(vacant)
         for i in range(len(histograms)):
             self.canvas.create_rectangle(10 + barW * i + vacant * i, min(self.height - 10, self.height - (self.height - 15) * histograms[i] / maxCount),
                                          10 + barW * (i + 1) + vacant * i, self.height - 10, tags="histogram")
@@ -124,9 +120,9 @@ class nearBusstop:
                                     , tags="histogram")
     def searchBus(self):
         if self.citycombobox.get() == "서울특별시":
-            searchBus(self.Infolist[self.passbylist.curselection()[0]], self.buses[self.passbylist.curselection()[0]], '서울특별시')
+            searchBus.searchBus(self.Infolist[self.passbylist.curselection()[0]], self.buses[self.passbylist.curselection()[0]], '서울특별시')
         else:
-            searchBus(self.Infolist[self.passbylist.curselection()[0]], self.buses[self.passbylist.curselection()[0]], '경기도')
+            searchBus.searchBus(self.Infolist[self.passbylist.curselection()[0]], self.buses[self.passbylist.curselection()[0]], '경기도')
     def retStid(self):
         if len(self.busstoplist.curselection()) == 0: return None
         return self.stid[self.busstoplist.curselection()[0]]
@@ -187,6 +183,8 @@ class nearBusstop:
 class map:
 
     def __init__(self, x='40.714728', y='-73.998672'):
+
+
         window = Toplevel()
         Label(window, text="지도").pack(anchor='w')
 
@@ -201,7 +199,7 @@ class map:
                          zoom + "&size=400x400&key=" + api_key)
         f = open('m.gif', 'wb')
 
-        print(r.content)
+        #print(r.content)
         f.write(r.content)
 
         f.close()

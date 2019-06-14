@@ -84,6 +84,7 @@ def Sgetsttn(keyword):
     global sttnList, stID
     stList = []
     stID = []
+    X, Y = [], []
     serviceKey = '1ZUPc%2BJmDiSiYavXUDMa1%2BbIXXZlyQjE1y%2FPZpJ88HsW28VvHpu7Sc4SS8DFMCrJlufba3pK3sf2JQtSvQ80Gg%3D%3D'
     url = 'http://ws.bus.go.kr/api/rest/stationinfo/getStationByName?serviceKey='
 
@@ -101,17 +102,22 @@ def Sgetsttn(keyword):
         for item in elements:
             bussttn = item.find("stNm") # 정류소명
             sttnID = item.find("arsId")  # 정류소ID
+            posx = item.find("tmX")
+            posy = item.find("tmY")
             stList.append(bussttn.text)
             stID.append(sttnID.text)
+            X.append(posx.text)
+            Y.append(posy.text)
         print(stID)
         #print(stList)
-        return stList, stID
+        return stList, stID, X, Y
     return None
 
 def Kgetsttn(keyword):
     global stList, stID
     stList = []
     stID = []
+    X, Y = [], []
     serviceKey = '1ZUPc%2BJmDiSiYavXUDMa1%2BbIXXZlyQjE1y%2FPZpJ88HsW28VvHpu7Sc4SS8DFMCrJlufba3pK3sf2JQtSvQ80Gg%3D%3D'
     url = 'http://openapi.gbis.go.kr/ws/rest/busstationservice?serviceKey='
 
@@ -129,11 +135,15 @@ def Kgetsttn(keyword):
         for item in elements:
             bussttn = item.find("stationName") #정류소명
             sttnID = item.find("stationId") #정류소ID
+            posx = item.find("x")
+            posy = item.find("y")
             stList.append(bussttn.text)
             stID.append(sttnID.text)
+            X.append(posx.text)
+            Y.append(posy.text)
         #print(stID)
         #print(stList)
-        return stList, stID
+        return stList, stID, X, Y
     return None
 
 #정류장 고유 번호로, 버스정보 알아내는 함수
