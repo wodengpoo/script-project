@@ -72,6 +72,7 @@ class nearBusstop:
         self.canvas.pack()
         self.canvas.delete("histogram")
         histograms = []
+        hs = []
         if self.passbylist.size() == 0 : return
         self.canvas.create_line(10, self.height - 10, self.width - 10, self.height - 10)
         for i in self.Infolist:
@@ -85,6 +86,8 @@ class nearBusstop:
                 pass
         cnt = 0
         for i in histograms:
+            if len(i) == 0:
+                i.append('000')
             if len(i) == 2:
                 i.insert(1, '0')
             if len(i) == 1:
@@ -97,22 +100,22 @@ class nearBusstop:
                 s += j
             if s == '':
                 s = 0
-            #histograms[cnt] = int(s)
-            histograms[cnt] = spam.timesize(int(s[0]), int(s[-2] + s[-1]))
+            histograms[cnt] = int(s)
+            hs[cnt] = spam.timesize(int(s[0]), int(s[-2] + s[-1]))
             cnt += 1
         #print(histograms)
         if len(histograms) == 1:
             barW = 30
         else:
             barW = (self.width - 50) / (len(histograms) + 1)
-        maxCount = int(max(histograms))
+        maxCount = int(max(hs))
         if maxCount == 0 or len(histograms) == 0:
             messagebox.showinfo("ShowInfo", "제공 데이터가 존재하지 않습니다.")
             return
         vacant = 10
         #print(vacant)
         for i in range(len(histograms)):
-            self.canvas.create_rectangle(10 + barW * i + vacant * i, min(self.height - 10, self.height - (self.height - 15) * histograms[i] / maxCount),
+            self.canvas.create_rectangle(10 + barW * i + vacant * i, min(self.height - 10, self.height - (self.height - 15) * hs[i] / maxCount),
                                          10 + barW * (i + 1) + vacant * i, self.height - 10, tags="histogram")
             self.canvas.create_text(10 + (i+1) * barW - barW/2 + vacant * i, self.height - 5, text=self.buses[i], tags="histogram")
             self.canvas.create_text(10 + (i+1) * barW - barW/2 + vacant * i, min(self.height-20, self.height - (self.height - 15) * histograms[i] / maxCount - 5),

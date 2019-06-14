@@ -8,11 +8,11 @@ from email.mime.image import MIMEImage
 from email.header import Header
 
 #global value
-def sendMessage(reciever="azfzg0995@naver.com", content="testing..." , busCD="1"):
+def sendMessage(reciever="ocyiw382@naver.com", content="testing..." , busCD="1"):
     host = "smtp.naver.com"  # naver STMP 서버 주소.
     port = "587"
 
-    senderAddr = "azfzg0995@naver.com"  # 보내는 사람 email 주소.
+    senderAddr = "ocyiw382@naver.com"  # 보내는 사람 email 주소.
     recipientAddr = reciever  # 받는 사람 email 주소.
 
     msg = MIMEMultipart()
@@ -32,7 +32,7 @@ def sendMessage(reciever="azfzg0995@naver.com", content="testing..." , busCD="1"
     s.ehlo()
     s.starttls()
     s.ehlo()
-    s.login("azfzg0995@naver.com", "nukk8945")
+    s.login("ocyiw382@naver.com", "2014182012z")
     s.sendmail(senderAddr, [recipientAddr], msg.as_string())
     s.close()
 
